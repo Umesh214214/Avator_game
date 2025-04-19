@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aviator Game</title>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    #multiplier {
+      font-size: 60px;
+      margin: 20px 0;
+    }
+    #status {
+      font-size: 32px;
+      color: red;
+      margin: 20px 0;
+    }
+    button {
+      font-size: 18px;
+      padding: 12px 24px;
+      margin: 10px;
+      border: none;
+      background-color: #3b82f6;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Aviator Game</h1>
+  <div id="multiplier">1.00x</div>
+  <div id="status">Waiting...</div>
+
+  <button onclick="startGame()">Start</button>
+  <button onclick="cashOut()">Cash Out</button>
+
+  <!-- Sound files -->
+  <audio id="startSound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
+  <audio id="crashSound" src="https://actions.google.com/sounds/v1/impacts/crash.ogg"></audio>
+  <audio id="flySound" src="https://cdn.pixabay.com/audio/2023/02/28/audio_c289c96ab4.mp3" loop></audio>
+
+  <script>
+    let multiplier = 1.00;
+    let crashPoint = 0;
+    let interval;
+    const multiplierDisplay = document.getElementById("multiplier");
+    const statusDisplay = document.getElementById("status");
+    const startSound = document.getElementById("startSound");
+    const crashSound = document.getElementById("crashSound");
+    const flySound = document.getElementById("flySound");
+
+    // Generate a crash point
+    function generateCrashPoint() {
+      const rand = Math.random();
+      if (rand < 0.7) return (Math.random() * 1 + 1.5).toFixed(2); // 1.5x to 2.5x
+      else if (rand < 0.9) return (Math.random() * 2 + 5).toFixed(2); // 5x to 7x
+      else return (Math.random() * 1 + 7).toFixed(2); // 7x to 8x
+    }
+
+    function startGame() {
+      clearInterval(interval);
+      multiplier = 1.00;
+      crashPoint = generateCrashPoint();
+      multiplierDisplay.textContent = "1.00x";
+      statusDisplay.textContent = "Plane is flying...";
+
+      startSound.play();
+      flySound.currentTime = 0;
+      flySound.play();
+
+      interval = setInterval(() => {
+        multiplier += 0.05;
+        multiplierDisplay.textContent = multiplier.toFixed(2) + "x";
+
+        if (multiplier >= crashPoint) {
+          clearInterval(interval);
+          flySound.pause();
+          crashSound.play();
+          statusDisplay.textContent = "Plane Crashed!";
+        }
+      }, 100);
+    }
+
+    function cashOut() {
+      clearInterval(interval);
+      flySound.pause();
+      statusDisplay.textContent = "You cashed out at " + multiplier.toFixed(2) + "x!";
+    }
+  </script>
+
+</body>
+</html>
